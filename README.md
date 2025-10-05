@@ -1,0 +1,2 @@
+# git-submodules-manager
+TBD
