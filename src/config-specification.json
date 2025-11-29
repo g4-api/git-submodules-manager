@@ -4,9 +4,11 @@
         {
             "name": "sub-module-demo",
             "repo": "https://github.com/g4-api/sub-module-demo.git",
-            "tag": "v1.2.4",
+            "version": "main",
             "versionConstraint": ">=0.0.0",
-            "localPath": "submodules/sub-module-demo"
+            "localPath": "submodules/sub-module-demo",
+            "binaryPath": "bin.txt",
+            "binaryLocalPath": "bin/libs/bin.txt"
         }
     ]
 }

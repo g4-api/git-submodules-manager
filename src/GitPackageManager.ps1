@@ -13,6 +13,46 @@ param(
 
 $ErrorActionPreference = 'Continue'
 
+function Copy-Files {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]$Module
+    )
+
+    $m = $Module
+
+    if (
+        [string]::IsNullOrWhiteSpace($m.binaryPath) -or
+        [string]::IsNullOrWhiteSpace($m.binaryLocalPath)
+    ) {
+        return   # skip binary handling
+    }
+    
+    # Resolve module root (submodule vs normal clone)
+    $moduleRoot = if ([bool]$m.submodule) {
+        Get-Submodule-Path -RepoRoot $repoRoot -RelPath $m.name
+    }
+    else {
+        Join-Path -Path (Get-Location) -ChildPath $m.name
+    }
+    
+    $src = Join-Path $moduleRoot $m.binaryPath
+    $dst = Join-Path (Get-Location) $m.binaryLocalPath
+    
+    if (-not (Test-Path $src -PathType Leaf)) {
+        Write-Host "Binary not found for '$($m.name)': $src" -ForegroundColor Yellow
+        continue
+    }
+    
+    $dstDir = Split-Path $dst -Parent
+    if (-not (Test-Path $dstDir)) {
+        New-Item -ItemType Directory -Force -Path $dstDir | Out-Null
+    }
+    
+    Copy-Item -LiteralPath $src -Destination $dst -Force
+    Write-Host "Copied binary for '$($m.name)': $($m.binaryPath) -> $($m.binaryLocalPath)" -ForegroundColor Green
+}
+
 function Is-Submodule {
     [CmdletBinding()]
     param(
@@ -442,6 +482,9 @@ function Invoke-Install {
 
             Write-Host "Installed '$($m.name)' at $commit" -ForegroundColor Green
         }
+
+        # Handle binary files
+        Copy-Files -Module $m
     }
 
     Write-Host "Install completed." -ForegroundColor Green
@@ -498,6 +541,9 @@ function Invoke-Restore {
 
             Write-Host "Restored '$($lm.name)' at $commit" -ForegroundColor Green
         }
+
+        # Handle binary files
+        Copy-Files -Module $m
     }
 
     Write-Host "Restore completed." -ForegroundColor Green
@@ -557,6 +603,9 @@ function Invoke-Update {
 
             Write-Host "Updated '$($m.name)' to $commit" -ForegroundColor Green
         }
+
+        # Handle binary files
+        Copy-Files -Module $m
     }
 
     Write-Host "Update completed." -ForegroundColor Green
