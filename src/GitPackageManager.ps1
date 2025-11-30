@@ -467,7 +467,9 @@ function Invoke-Install {
             $targetDir = Join-Path -Path (Get-Location) -ChildPath $m.name
 
             Ensure-Clone-And-Fetch -Repo $m.repo -TargetDir $targetDir
-            Ensure-Sparse -TargetDir $targetDir -RepoRelativePath $m.localPath
+            
+            # TODO: enable later on for better performance and file selection
+            # Ensure-Sparse -TargetDir $targetDir -RepoRelativePath $m.localPath
 
             $ref    = Resolve-Desired-Ref -Version $m.version -Tag $m.tag -TargetDir $targetDir
             $commit = Resolve-Commit     -TargetDir $targetDir -Ref $ref
@@ -529,7 +531,8 @@ function Invoke-Restore {
             $targetDir = Join-Path -Path (Get-Location) -ChildPath $m.name
 
             Ensure-Clone-And-Fetch -Repo $m.repo -TargetDir $targetDir
-            Ensure-Sparse -TargetDir $targetDir -RepoRelativePath $lm.localPath
+            # TODO: enable later on for better performance and file selection
+            #Ensure-Sparse -TargetDir $targetDir -RepoRelativePath $lm.localPath
 
             Ensure-Full-Fetch -TargetDir $targetDir
             $commit = Resolve-Commit -TargetDir $targetDir -Ref $lm.resolvedCommit
@@ -588,7 +591,8 @@ function Invoke-Update {
             $targetDir = Join-Path -Path (Get-Location) -ChildPath $m.name
 
             Ensure-Clone-And-Fetch -Repo $m.repo -TargetDir $targetDir
-            Ensure-Sparse -TargetDir $targetDir -RepoRelativePath $m.localPath
+            # TODO: enable later on for better performance and file selection
+            # Ensure-Sparse -TargetDir $targetDir -RepoRelativePath $m.localPath
 
             $ref    = Resolve-Desired-Ref -Version $m.version -Tag $m.tag -TargetDir $targetDir
             $commit = Resolve-Commit     -TargetDir $targetDir -Ref $ref
@@ -666,7 +670,7 @@ function Invoke-Remove {
                 Write-Host "Submodule '$($m.name)' removed." -ForegroundColor Green
             }
             else {
-                # Not a registered submodule — just delete the folder if present
+                # Not a registered submodule â€” just delete the folder if present
                 Remove-DirectorySafe -Path $subPath
                 Write-Host "Deleted folder for (non-registered) submodule '$($m.name)'." -ForegroundColor Green
             }
